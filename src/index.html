@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="./css/style-min.css" />
+
+    <title>TODO - List</title>
+  </head>
+  <body>
+    <main class="container">
+      <h1 id="title" class="title">Todo List</h1>
+
+      <form id="form" class="form">
+        <!-- ADD TaskName -->
+        <div class="form__field">
+          <input
+            type="text"
+            name="value"
+            id="value"
+            placeholder="Type a Task"
+            class="task-field"
+          />
+        </div>
+
+        <!-- ADD Priority -->
+        <div class="form__field form__field-priority">
+          <label
+            for="priority__high"
+            class="priority__box priority__high"
+          ></label>
+          <input
+            type="radio"
+            name="priority"
+            id="priority__high"
+            class="btn-radio"
+          />
+          <label
+            for="priority__medium"
+            class="priority__box priority__medium"
+          ></label>
+          <input
+            type="radio"
+            name="priority"
+            id="priority__medium"
+            class="btn-radio"
+          />
+          <label
+            for="priority__low"
+            class="priority__box priority__low"
+          ></label>
+          <input
+            type="radio"
+            name="priority"
+            id="priority__low"
+            class="btn-radio"
+          />
+        </div>
+
+        <!-- ADD Date -->
+        <div class="form__field">
+          <input
+            type="datetime-local"
+            name="date"
+            id="date"
+            class="task-date"
+          />
+        </div>
+
+        <!-- SEND Task -->
+        <div class="form__field">
+          <button class="btn-submit" id="submit" type="submit">
+            <i class="fas fa-pen"></i>
+          </button>
+        </div>
+      </form>
+
+      <!-- Error Form -->
+      <div id="info" class="info">
+        <p id="errorMsg"></p>
+      </div>
+
+      <!-- Task List -->
+      <div class="tasks" id="tasks">
+        <!-- Task Component -->
+        <div class="task" class="priority-high">
+          <input type="checkbox" name="selected" id="selected" />
+          <p class="task__name">Lorem ipsum dolor sit</p>
+          <p class="task__dateNumber">10 21 59 30</p>
+          <p class="task__date">D H M S</p>
+          <button class="delete" id="delete">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/js/all.min.js"></script>
+    <script src="./js/scripts-min.js"></script>
+  </body>
+</html>
