@@ -11,6 +11,8 @@
   "rules": {
     "quotes": "off",
     "no-console": "warn",
-    "arrow-body-style": "off"
+    "arrow-body-style": "off",
+    "max-len": "off",
+    "operator-linebreak": "off"
   }
 }
