@@ -1,3 +1,14 @@
+:root {
+  --ligth: #f1f4f7;
+  --dark: #050202;
+  --bg-color: #6795eb;
+  --correct: #038003;
+  --incorrect: #f00d0d;
+  --priority-low: #038003;
+  --priority-high: #f00d0d;
+  --priority-medium: #ec9d0a;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -7,11 +18,11 @@
   height: 100vh;
 
   font-family: Arial, Helvetica, sans-serif;
-  color: aliceblue;
+  color: var(--ligth);
 
   text-align: center;
 
-  background-color: cornflowerblue;
+  background-color: var(--bg-color);
 }
 
 .title {
@@ -53,7 +64,7 @@
 .task-field {
   width: 100%;
   padding: 10px;
-  border: 2px solid black;
+  border: 2px solid var(--dark);
 }
 
 .btn-radio,
@@ -61,26 +72,30 @@
   display: none;
 }
 
+.btn-radio:checked + .priority__box {
+  border: 1px solid var(--ligth);
+}
+
 .priority__box {
   width: 50px;
   height: 50px;
 
   display: inline-block;
-  border: 2px solid black;
+  border: 2px solid var(--dark);
 
   cursor: pointer;
 }
 
 .priority__high {
-  background-color: red;
+  background-color: var(--priority-high);
 }
 
 .priority__medium {
-  background-color: orange;
+  background-color: var(--priority-medium);
 }
 
 .priority__low {
-  background-color: green;
+  background-color: var(--priority-low);
 }
 
 .form__field-priority {
@@ -93,14 +108,14 @@
 .task-date {
   width: 100%;
   padding: 10px;
-  border: 2px solid black;
+  border: 2px solid var(--dark);
   cursor: pointer;
 }
 
 .btn-submit {
   width: 100%;
   height: 100%;
-  border: 2px solid black;
+  border: 2px solid var(--dark);
   cursor: pointer;
 }
 
@@ -110,8 +125,8 @@
   padding: 10px;
   font-size: 1.5em;
   font-weight: bold;
-  color: aliceblue;
-  background-color: green;
+  color: var(--ligth);
+  background-color: var(--correct);
   position: absolute;
   top: 0;
   width: 100%;
@@ -122,8 +137,8 @@
   padding: 10px;
   font-size: 1.5em;
   font-weight: bold;
-  color: aliceblue;
-  background-color: red;
+  color: var(--ligth);
+  background-color: var(--incorrect);
   position: absolute;
   top: 0;
   width: 100%;
@@ -147,12 +162,17 @@
   grid-template-columns: 50% 40% 10%;
   align-items: center;
 
-  border: 1px solid aliceblue;
+  border: 1px solid var(--ligth);
 }
 
 .task__name {
   font-weight: bold;
   text-align: left;
+  cursor: pointer;
+}
+
+.task__done {
+  text-decoration: line-through;
 }
 
 .date-view {

@@ -1,8 +1,5 @@
 // ! DOM
 const form = document.getElementById("form");
-const taskName = document.getElementById("taskName");
-const taskPriority = document.getElementById("taskPriority");
-const taskDate = document.getElementById("date");
 const info = document.getElementById("info");
 const tasks = document.getElementById("tasks");
 
@@ -21,13 +18,43 @@ const taskInfo = document.createElement("P");
 
 // ! Functions
 
+const getRemainTime = (deadline) => {
+  const now = new Date();
+  const remainTime = (new Date(deadline) - now + 1000) / 1000;
+  const remainSeconds = ("0" + Math.floor(remainTime % 60)).slice(-2);
+  const remainMinutes = ("0" + Math.floor((remainTime / 60) % 60)).slice(-2);
+  const remainHours = ("0" + Math.floor((remainTime / 3600) % 24)).slice(-2);
+  const remainDays = Math.floor(remainTime / (3600 * 24));
+
+  return {
+    remainTime,
+    remainSeconds,
+    remainMinutes,
+    remainHours,
+    remainDays,
+  };
+};
+
+const countdown = (deadline, elem, finalMessage) => {
+  const el = document.getElementById(elem);
+  const timerUpdate = setInterval(() => {
+    const t = getRemainTime(deadline);
+    el.innerHTML = `${t.remainDays}d:${t.remainHours}h:${t.remainMinutes}m:${t.remainSeconds}s`;
+
+    if (t.remainTime <= 1) {
+      clearInterval(timerUpdate);
+      el.innerHTML = finalMessage;
+    }
+  }, 1000);
+};
+
 const createTask = (task, priority, date) => {
-  let item = {
+  const item = {
     name: task,
     priority: priority,
     date: date,
   };
-  taskList.push(item);
+  taskList.unshift(item);
   return item;
 };
 
@@ -63,51 +90,23 @@ const printTask = () => {
       </div>
       `;
       countdown(element.date, "count", "La tarea esta fuera de tiempo");
+
+      // ! BUG
       // ? No tengo ni idea de porqué solo se carga la cuenta atrás en un elemento.
     });
   }
 };
 
-const getRemainTime = (deadline) => {
-  let now = new Date();
-  let remainTime = (new Date(deadline) - now + 1000) / 1000;
-  let remainSeconds = ("0" + Math.floor(remainTime % 60)).slice(-2);
-  // ? Por si no se entiende, lo que sucede es que le sumo un 0 como string y con slice(-2) le digo que muestre solo los dos digitos empezando por la derecha. El 0 en string estará pero no se mostrará hasta que el valor de Math sea de 1 dígito.
-  let remainMinutes = ("0" + Math.floor((remainTime / 60) % 60)).slice(-2);
-  let remainHours = ("0" + Math.floor((remainTime / 3600) % 24)).slice(-2);
-  let remainDays = Math.floor(remainTime / (3600 * 24));
-
-  return {
-    remainTime,
-    remainSeconds,
-    remainMinutes,
-    remainHours,
-    remainDays,
-  };
-};
-
-const countdown = (deadline, elem, finalMessage) => {
-  const el = document.getElementById(elem);
-  const timerUpdate = setInterval(() => {
-    let t = getRemainTime(deadline);
-    el.innerHTML = `${t.remainDays}:${t.remainHours}:${t.remainMinutes}:${t.remainSeconds}`;
-
-    if (t.remainTime <= 1) {
-      clearInterval(timerUpdate);
-      el.innerHTML = finalMessage;
-    }
-  }, 1000);
-};
-
-const deleteTask = (task) => {
-  let indexTask;
-  taskList.forEach((element, index) => {
-    if (element.name === task) indexTask = index;
+const deleteTask = (id) => {
+  const indexTask = taskList.findIndex((element) => {
+    return element.name === id;
   });
+
   taskList.splice(indexTask, 1);
   addTask();
 };
 
+// * Validate and Show Error Info
 const validateTask = () => {
   const taskValues = Object.values(taskIsValid);
   const valid = taskValues.findIndex((value) => value === false);
@@ -153,32 +152,32 @@ const validateTask = () => {
 
 // ! Events
 
-taskName.addEventListener("change", (e) => {
+// * Validate Forms Fields
+form.addEventListener("change", (e) => {
   e.preventDefault();
-  if (e.target.value.trim().length > 0) taskIsValid.task = true;
-  else taskIsValid.task = false;
+  if (e.target.type === "text") {
+    if (e.target.value.trim().length > 0) taskIsValid.task = true;
+    else taskIsValid.task = false;
+  }
+  if (e.target.type === "radio") {
+    if (e.target.checked === true) taskIsValid.priority = true;
+    else taskIsValid.priority = false;
+  }
+  if (e.target.type === "datetime-local") {
+    const date = new Date(e.target.value);
+    if (date.getTime() > currentDate.getTime()) taskIsValid.date = true;
+    else taskIsValid.date = false;
+  }
 });
 
-taskPriority.addEventListener("change", (e) => {
-  e.preventDefault();
-  if (e.target.checked === true) taskIsValid.priority = true;
-  else taskIsValid.priority = false;
-});
-
-taskDate.addEventListener("change", (e) => {
-  e.preventDefault();
-  const date = new Date(e.target.value);
-  if (date.getTime() > currentDate.getTime()) taskIsValid.date = true;
-  else taskIsValid.date = false;
-});
-
+// * Send form and add task
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  //* Locals
-  let name = e.target.taskName.value;
-  let priority = e.target.taskPriority.value;
-  let date = e.target.taskDate.value;
+  // * Locals
+  const name = e.target.taskName.value;
+  const priority = e.target.taskPriority.value;
+  const date = e.target.taskDate.value;
 
   validateTask();
   // * Add task to localStore
@@ -196,13 +195,28 @@ form.addEventListener("submit", (e) => {
   addTask();
 });
 
+// * Load Tasks
 document.addEventListener("DOMCOntentLoaded", printTask());
 
+// * Task Delete
 tasks.addEventListener("click", (e) => {
   e.preventDefault();
-  let taskNameForDelete = e.path[2].childNodes[1].innerText;
+  const taskNameForDelete = e.path[2].childNodes[1].innerText;
 
   if (e.target.innerText.trim() === "delete") {
     deleteTask(taskNameForDelete);
+  }
+});
+
+// * Task Done
+tasks.addEventListener("click", (e) => {
+  // const target = e.path[1].childNodes[1].innerText;
+  const done = e.target;
+  if (done.classList.contains("task__name")) {
+    if (done.classList.contains("task__done")) {
+      done.classList.remove("task__done");
+    } else {
+      done.classList.add("task__done");
+    }
   }
 });
