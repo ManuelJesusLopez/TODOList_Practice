@@ -171,8 +171,8 @@
   cursor: pointer;
 }
 
-.task__done {
-  text-decoration: line-through;
+.task__done-parent {
+  background-color: var(--dark);
 }
 
 .date-view {

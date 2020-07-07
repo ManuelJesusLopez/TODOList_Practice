@@ -39,11 +39,11 @@ const countdown = (deadline, elem, finalMessage) => {
   const el = document.getElementById(elem);
   const timerUpdate = setInterval(() => {
     const t = getRemainTime(deadline);
-    el.innerHTML = `${t.remainDays}d:${t.remainHours}h:${t.remainMinutes}m:${t.remainSeconds}s`;
+    el.textContent = `${t.remainDays}d:${t.remainHours}h:${t.remainMinutes}m:${t.remainSeconds}s`;
 
     if (t.remainTime <= 1) {
       clearInterval(timerUpdate);
-      el.innerHTML = finalMessage;
+      el.textContent = finalMessage;
     }
   }, 1000);
 };
@@ -53,6 +53,7 @@ const createTask = (task, priority, date) => {
     name: task,
     priority: priority,
     date: date,
+    idCount: Math.round(Math.random() * 100),
   };
   taskList.unshift(item);
   return item;
@@ -71,28 +72,32 @@ const printTask = () => {
     taskList = [];
   } else {
     taskList.forEach((element) => {
+      const elementClass = element.priority;
+      const elementName = element.name;
+      const elementDate = element.date;
+      const elementCount = element.idCount;
+
       tasks.innerHTML += `
-      <div class="task priority__${element.priority}">
-        <p class="task__name">${element.name}</p>
+      <div class="task priority__${elementClass}">
+        <p class="task__name">${elementName}</p>
           <div class="date-view">
             <div class="date-view__top">
               <p class="date-view__item">La fecha de finalización es:</p>
             </div>
             <div class="date-view__bottom">
-              <p class="date-view__item" id="count"></p>
+              <p class="date-view__item" id="${elementCount}"></p>
             </div>
           </div>
-        <button class="delete-task" id="delete-task">
+        <button class="delete-task">
           <span class="material-icons">
             delete
           </span>
         </button>
       </div>
       `;
-      countdown(element.date, "count", "La tarea esta fuera de tiempo");
-
-      // ! BUG
-      // ? No tengo ni idea de porqué solo se carga la cuenta atrás en un elemento.
+      countdown(elementDate, elementCount, "La tarea esta fuera de tiempo");
+      // ! Sigo con el error
+      console.log(elementCount);
     });
   }
 };
@@ -117,7 +122,8 @@ const validateTask = () => {
     case -1:
       taskInfo.classList.remove("incorrect-task");
       taskInfo.classList.add("correct-task");
-      taskInfo.textContent = "Tarea Creada correctamente";
+      taskInfo.textContent =
+        "Tarea Creada correctamente. Click encima de la tarea para completarla.";
       fragment.append(taskInfo);
       setTimeout(() => {
         taskInfo.classList.remove("correct-task");
@@ -210,13 +216,16 @@ tasks.addEventListener("click", (e) => {
 
 // * Task Done
 tasks.addEventListener("click", (e) => {
-  // const target = e.path[1].childNodes[1].innerText;
   const done = e.target;
+  const parentDone = e.target.parentElement;
+
   if (done.classList.contains("task__name")) {
     if (done.classList.contains("task__done")) {
       done.classList.remove("task__done");
+      parentDone.classList.remove("task__done-parent");
     } else {
       done.classList.add("task__done");
+      parentDone.classList.add("task__done-parent");
     }
   }
 });
