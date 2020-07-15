@@ -35,17 +35,11 @@ const getRemainTime = (deadline) => {
   };
 };
 
-const countdown = (deadline, elem, finalMessage) => {
-  const el = document.getElementById(elem);
-  const timerUpdate = setInterval(() => {
-    const t = getRemainTime(deadline);
-    el.textContent = `${t.remainDays}d:${t.remainHours}h:${t.remainMinutes}m:${t.remainSeconds}s`;
-
-    if (t.remainTime <= 1) {
-      clearInterval(timerUpdate);
-      el.textContent = finalMessage;
-    }
-  }, 1000);
+const countdown = (deadline) => {
+  const time = getRemainTime(deadline);
+  let output = "";
+  output = `${time.remainDays}D:${time.remainHours}H:${time.remainMinutes}M:${time.remainSeconds}S`;
+  return output;
 };
 
 const createTask = (task, priority, date) => {
@@ -53,7 +47,6 @@ const createTask = (task, priority, date) => {
     name: task,
     priority: priority,
     date: date,
-    idCount: Math.round(Math.random() * 100),
   };
   taskList.unshift(item);
   return item;
@@ -75,17 +68,18 @@ const printTask = () => {
       const elementClass = element.priority;
       const elementName = element.name;
       const elementDate = element.date;
-      const elementCount = element.idCount;
+
+      const viewCountdown = countdown(elementDate);
 
       tasks.innerHTML += `
       <div class="task priority__${elementClass}">
         <p class="task__name">${elementName}</p>
           <div class="date-view">
             <div class="date-view__top">
-              <p class="date-view__item">La fecha de finalización es:</p>
+              <p class="date-view__item">Tiempo restante:</p>
             </div>
             <div class="date-view__bottom">
-              <p class="date-view__item" id="${elementCount}"></p>
+              <p class="date-view__item">${viewCountdown}</p>
             </div>
           </div>
         <button class="delete-task">
@@ -95,9 +89,6 @@ const printTask = () => {
         </button>
       </div>
       `;
-      countdown(elementDate, elementCount, "La tarea esta fuera de tiempo");
-      // ! Sigo con el error
-      console.log(elementCount);
     });
   }
 };
@@ -202,12 +193,15 @@ form.addEventListener("submit", (e) => {
 });
 
 // * Load Tasks
-document.addEventListener("DOMCOntentLoaded", printTask());
+
+setInterval(() => {
+  document.addEventListener("DOMCOntentLoaded", printTask());
+}, 1000);
 
 // * Task Delete
 tasks.addEventListener("click", (e) => {
   e.preventDefault();
-  const taskNameForDelete = e.path[2].childNodes[1].innerText;
+  const taskNameForDelete = e.target.textContent.trim();
 
   if (e.target.innerText.trim() === "delete") {
     deleteTask(taskNameForDelete);
